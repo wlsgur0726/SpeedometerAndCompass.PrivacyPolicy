@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="속도계와 나침반 · Speedometer and Compass">
+  <title>개인정보처리방침 · Privacy Policy</title>
+  <style>
+:root { color-scheme: light dark; font: 17px/1.8 system-ui, -apple-system, "Segoe UI", sans-serif; color: #202c3c; background: #f5f7fa; }
+* { box-sizing: border-box; }
+body { max-width: 960px; margin: 0 auto; padding: 24px; }
+header { display: flex; justify-content: space-between; gap: 16px; align-items: center; flex-wrap: wrap; padding: 8px 0 24px; }
+.app { margin: 0; font-weight: 650; }
+nav { display: flex; flex-wrap: wrap; gap: 8px; }
+.language-button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 6px 16px; border: 1px solid currentColor; border-radius: 8px; text-decoration: none; }
+.language-button:hover { text-decoration: underline; }
+.language-button[aria-current="page"] { color: #fff; background: #175aab; border-color: #175aab; }
+a { color: #175aab; text-underline-offset: 4px; overflow-wrap: anywhere; }
+a:focus-visible { outline: 3px solid #b36b00; outline-offset: 4px; }
+[aria-current="page"] { font-weight: 700; }
+main { padding: 40px; border: 1px solid #d7dfe9; border-radius: 16px; background: #fff; }
+h1 { margin: 0; font-size: clamp(1.8rem, 5vw, 2.4rem); line-height: 1.3; }
+h2 { font-size: 1.2rem; margin: 2rem 0 .5rem; }
+p { margin: .8rem 0; }
+.date, footer { color: #526174; font-size: .9rem; }
+code { overflow-wrap: anywhere; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .94rem; }
+caption { text-align: left; font-weight: 650; margin: 1rem 0 .5rem; }
+th, td { padding: 12px; border: 1px solid #d7dfe9; text-align: left; vertical-align: top; min-width: 130px; }
+th { background: #eef3f8; }
+address { font-style: normal; }
+footer { padding: 24px 0; }
+.skip { position: absolute; left: -10000px; }
+.skip:focus { position: static; display: block; padding: 12px; }
+@media (max-width: 600px) { body { padding: 16px; } main { padding: 24px 18px; } }
+@media (prefers-color-scheme: dark) {
+  :root { color: #e1e7ef; background: #101820; }
+  main { background: #18222d; border-color: #445365; }
+  a { color: #91c6ff; }
+  .date, footer { color: #b1bfd0; }
+  th, td { border-color: #445365; }
+  th { background: #222f3d; }
+}
+@media print { :root, main { color: #000; background: #fff; } body, main { max-width: none; padding: 0; border: 0; } nav, .skip, footer { display: none; } .table-wrap { overflow: visible; } }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#policy">본문으로 이동 · Skip to content</a>
+  <header>
+    <p class="app">속도계와 나침반 · Speedometer and Compass</p>
+    <nav aria-label="언어 · Language">
+      <a class="language-button" href="?lang=ko" lang="ko" hreflang="ko">한국어</a>
+      <a class="language-button" href="?lang=en" lang="en" hreflang="en">English</a>
+    </nav>
+  </header>
+  <main id="policy" aria-busy="true">
+    <p role="status">불러오는 중 · Loading…</p>
+  </main>
+  <noscript>개인정보처리방침을 보려면 JavaScript를 켜 주세요. · Please enable JavaScript to view this policy.</noscript>
+  <footer></footer>
+  <script src="./locales/ko.js"></script>
+  <script src="./locales/en.js"></script>
+  <script>
+    const languageButtons = [...document.querySelectorAll('.language-button')];
+    const url = new URL(location.href);
+    const requestedLanguage = url.searchParams.get('lang')?.toLowerCase();
+    const language = languageButtons.some(button => button.lang === requestedLanguage) ? requestedLanguage : 'ko';
+    url.searchParams.set('lang', language);
+    history.replaceState(null, '', url);
+    document.documentElement.lang = language;
+
+    for (const button of languageButtons) {
+      const target = new URL(url);
+      target.searchParams.set('lang', button.lang);
+      button.href = target.href;
+      if (button.lang === language) button.setAttribute('aria-current', 'page');
+    }
+
+    // All localized strings are plain text, never HTML.
+    function element(tag, text, parent) {
+      const node = document.createElement(tag);
+      if (text !== undefined) node.textContent = text;
+      if (parent) parent.append(node);
+      return node;
+    }
+
+    function paragraphs(lines, parent) {
+      for (const line of lines) element('p', line, parent);
+    }
+
+    function render(data) {
+      document.title = data.pageTitle;
+      document.querySelector('meta[name="description"]').content = data.description;
+      document.querySelector('.skip').textContent = data.skipToContent;
+      document.querySelector('.app').textContent = data.appName;
+      document.querySelector('nav').setAttribute('aria-label', data.languageSelection);
+      document.querySelector('[aria-current="page"]').textContent = data.languageName;
+
+      const content = document.createDocumentFragment();
+      element('h1', data.title, content);
+      const date = element('p', data.effectiveDate.label + ' ', content);
+      date.className = 'date';
+      element('time', data.effectiveDate.text, date).dateTime = data.effectiveDate.iso;
+      paragraphs(data.introduction, content);
+
+      for (const section of data.sections) {
+        element('h2', section.title, content);
+        paragraphs(section.paragraphs, content);
+        if (section.table) {
+          const wrapper = element('div', undefined, content);
+          wrapper.className = 'table-wrap';
+          const table = element('table', undefined, wrapper);
+          element('caption', section.table.caption, table);
+          const heading = element('tr', undefined, element('thead', undefined, table));
+          for (const label of section.table.headers) element('th', label, heading).scope = 'col';
+          const body = element('tbody', undefined, table);
+          for (const row of section.table.rows) {
+            const tr = element('tr', undefined, body);
+            for (const cell of row) element('td', cell, tr);
+          }
+        }
+        if (section.links) {
+          const list = element('ul', undefined, content);
+          for (const link of section.links) {
+            const target = new URL(link.url);
+            if (target.protocol !== 'https:') throw new Error('Invalid reference link');
+            element('a', link.text, element('li', undefined, list)).href = target.href;
+          }
+        }
+        if (section.contact) {
+          const address = element('address', undefined, content);
+          section.contact.forEach((line, index) => {
+            if (index > 0) address.append(document.createElement('br'));
+            const parts = line.split(section.email);
+            parts.forEach((part, partIndex) => {
+              if (partIndex > 0) element('a', section.email, address).href = 'mailto:' + section.email;
+              address.append(document.createTextNode(part));
+            });
+          });
+        }
+      }
+      document.querySelector('#policy').replaceChildren(content);
+      document.querySelector('footer').textContent = data.footer;
+    }
+
+    function load() {
+      const policy = document.querySelector('#policy');
+      try {
+        render(window.policyLocales[language]);
+      } catch (error) {
+        console.error('Unable to load privacy policy', error);
+        const message = element('p', language === 'ko'
+          ? '방침을 불러오지 못했습니다. 새로고침해 주세요.'
+          : 'Unable to load the policy. Please refresh the page.');
+        message.setAttribute('role', 'alert');
+        policy.replaceChildren(message);
+      } finally {
+        policy.setAttribute('aria-busy', 'false');
+      }
+    }
+
+    load();
+  </script>
+</body>
+</html>
